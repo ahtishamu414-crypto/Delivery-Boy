@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -24,6 +25,9 @@ public class PlayerController : MonoBehaviour
     public float groundDistance = 0.3f;
     public LayerMask groundLayer;
 
+    [Header("Health Score")]
+    public int health = 100;
+
     private int currentLane = 1;
     private float targetX;
     private float originX;
@@ -39,7 +43,6 @@ public class PlayerController : MonoBehaviour
 
     private CharacterController cc;
     private Animator anim;
-
     void Start()
     {
         cc = GetComponent<CharacterController>();
@@ -48,6 +51,7 @@ public class PlayerController : MonoBehaviour
         targetX = originX;
         originalHeight = cc.height;
         originalCenter = cc.center;
+        Physics.queriesHitTriggers = true;
     }
 
     void Update()
@@ -189,11 +193,52 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Coin"))
         {
+            GameManager.instance.AddScore(1);
+            AudioManager.instance.PlayCoinCollect();
             other.gameObject.GetComponent<MeshRenderer>().enabled = false;
             Destroy(other.gameObject, 0.1f);
         }
-    }
+        if (other.CompareTag("Enemy"))
+        {
+            health -= 25;
+            if (health < 0) health = 0;
+            if (health != 0)
+            {
+                anim.SetTrigger("block");
+            }
+            GameManager.instance.HealthScore(health);
+            Destroy(other.gameObject, 0.1f);
 
+            if (health == 0)
+            {
+                isDead = true;
+                forwardSpeed = 0f;
+                laneChangeSpeed = 0f;
+                anim.SetTrigger("death");
+                StartCoroutine(DieCoroutine());
+            }
+        }
+        if (other.CompareTag("Enemy1"))
+        {
+            health -= 50;
+            if (health < 0) health = 0;
+            if (health != 0)
+            {
+                anim.SetTrigger("block");
+            }
+            GameManager.instance.HealthScore(health);
+            Destroy(other.gameObject, 0.1f);
+
+            if (health == 0)
+            {
+                isDead = true;
+                forwardSpeed = 0f;
+                laneChangeSpeed = 0f;
+                anim.SetTrigger("death");
+                StartCoroutine(DieCoroutine());
+            }
+        }
+    }
     // ← CHANGED: CompareTag instead of LayerMask.NameToLayer
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
@@ -205,18 +250,26 @@ public class PlayerController : MonoBehaviour
     }
 
     void Die()
+{
+    isDead = true;
+    forwardSpeed = 0f;
+    laneChangeSpeed = 0f;
+    anim.SetTrigger("die");
+
+    // Fixed deprecated method
+    EnemyMovement[] enemies = FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);
+    foreach (EnemyMovement enemy in enemies)
     {
-        isDead = true;
-        forwardSpeed = 0f;
-        laneChangeSpeed = 0f;
-        anim.SetTrigger("die");
-        StartCoroutine(DieCoroutine());
+        enemy.enabled = false;
     }
+
+    AudioManager.instance.PlayObstacleHit();
+    StartCoroutine(DieCoroutine());
+}
 
     IEnumerator DieCoroutine()
     {
         yield return new WaitForSeconds(1.5f);
-        GameManager.instance.GameOver();
     }
 
     void MoveLeft()

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Coin
   - Obstacle
+  - Enemy
+  - Enemy1
   layers:
   - Default
   - TransparentFX
