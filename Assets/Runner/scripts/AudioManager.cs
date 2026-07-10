@@ -7,6 +7,8 @@ public class AudioManager : MonoBehaviour
     [Header("FX")]
     public AudioSource coinCollect;
     public AudioSource obstacleHit;
+    public AudioSource enemyHit;
+    public AudioSource fall;
     void Awake()
     {
         instance = this;
@@ -16,8 +18,17 @@ public class AudioManager : MonoBehaviour
     {
         coinCollect.Play();
     }
+    public void PlayEnemyHit()
+    {
+        enemyHit.Play();
+    }
+
     public void PlayObstacleHit()
     {
         obstacleHit.Play();
+    }
+    public void PlayFall()
+    {
+        fall.Play();
     }
 }

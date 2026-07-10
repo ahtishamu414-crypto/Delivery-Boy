@@ -205,6 +205,7 @@ public class PlayerController : MonoBehaviour
             if (health != 0)
             {
                 anim.SetTrigger("block");
+                AudioManager.instance.PlayEnemyHit();
             }
             GameManager.instance.HealthScore(health);
             Destroy(other.gameObject, 0.1f);
@@ -215,6 +216,7 @@ public class PlayerController : MonoBehaviour
                 forwardSpeed = 0f;
                 laneChangeSpeed = 0f;
                 anim.SetTrigger("death");
+                AudioManager.instance.PlayFall();
                 StartCoroutine(DieCoroutine());
             }
         }
@@ -225,6 +227,7 @@ public class PlayerController : MonoBehaviour
             if (health != 0)
             {
                 anim.SetTrigger("block");
+                AudioManager.instance.PlayEnemyHit();
             }
             GameManager.instance.HealthScore(health);
             Destroy(other.gameObject, 0.1f);
@@ -235,6 +238,7 @@ public class PlayerController : MonoBehaviour
                 forwardSpeed = 0f;
                 laneChangeSpeed = 0f;
                 anim.SetTrigger("death");
+                AudioManager.instance.PlayFall();
                 StartCoroutine(DieCoroutine());
             }
         }
@@ -270,6 +274,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator DieCoroutine()
     {
         yield return new WaitForSeconds(1.5f);
+        GameManager.instance.GameOver();
     }
 
     void MoveLeft()

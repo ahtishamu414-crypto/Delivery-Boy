@@ -1,35 +1,3 @@
-// using UnityEngine;
-// using TMPro;
-
-// public class GameManager : MonoBehaviour
-// {
-//     public static GameManager instance;
-//     public int score = 0;
-//     public TextMeshProUGUI scoreText;
-//     public GameObject gameOverPanel;
-
-//     void Awake()
-//     {
-//         instance = this;
-//     }
-
-//     public void AddScore(int amount)
-//     {
-//         score += amount;
-//         scoreText.text = "Coins: " + score;
-//     }
-
-//     public void GameOver()
-//     {
-//         StartCoroutine(ShowGameOver());
-//     }
-
-//     System.Collections.IEnumerator ShowGameOver()
-//     {
-//         yield return new WaitForSeconds(2f);
-//         gameOverPanel.SetActive(true);
-//     }
-// }
 
 using UnityEngine;
 using TMPro;
@@ -47,6 +15,8 @@ public class GameManager : MonoBehaviour
     [Header("Health")]
     public TextMeshProUGUI healthText;
 
+    [Header("Game Over")]
+    public GameOverPanel gameOverPanel;
 
     void Awake()
     {
@@ -54,17 +24,30 @@ public class GameManager : MonoBehaviour
     }
 
     public void AddScore(int amount)
+{
+    score += amount;
+    scoreText.text = score.ToString(); // just the number
+}
+
+public void HealthScore(int health)
+{
+    healthText.text = health + "%";
+}
+
+    public void GameOver()
     {
-        score += amount;
-        scoreText.text = "Coins: " + score;
+        StartCoroutine(ShowGameOverPanel());
     }
 
-    // New method for health UI update
-    public void HealthScore(int health)
+    IEnumerator ShowGameOverPanel()
+{
+    yield return new WaitForSeconds(1.5f);
+    Debug.Log($"gameOverPanel is null: {gameOverPanel == null}");
+    gameOverPanel.Setup(score);
+}
+
+    public void RestartGame()
     {
-        healthText.text = "Health: " + health;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-
-
-   
 }
